@@ -1,4 +1,4 @@
-use patient_api::api::Application;
+use patient_api::Application;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
