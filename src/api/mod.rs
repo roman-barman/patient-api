@@ -1,2 +1,4 @@
-pub mod startup;
+mod startup;
 pub use startup::*;
+
+mod routes;

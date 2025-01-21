@@ -1,0 +1,19 @@
+### Get all patients
+GET http://localhost:8080/patients
+
+###
+
+### Get patient by ID
+GET http://localhost:8080/patients/12345
+
+###
+
+### Create patient
+POST http://localhost:8080/patients
+
+###
+
+### Update patient
+PUT http://localhost:8080/patients/12345
+
+###

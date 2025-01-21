@@ -1,6 +1,6 @@
+use crate::api::routes::{create_patient, get_all_patients, get_patient, update_patient};
 use actix_web::dev::Server;
 use actix_web::{App, HttpServer};
-use std::net::TcpListener;
 
 pub struct Application {
     server: Server,
@@ -8,8 +8,7 @@ pub struct Application {
 
 impl Application {
     pub async fn start() -> Result<Self, anyhow::Error> {
-        let listener = TcpListener::bind("127.0.0.1:8080")?;
-        let server = run(listener).await?;
+        let server = run().await?;
 
         Ok(Self { server })
     }
@@ -19,8 +18,16 @@ impl Application {
     }
 }
 
-async fn run(listener: TcpListener) -> Result<Server, anyhow::Error> {
-    let server = HttpServer::new(App::new).listen(listener)?.run();
+async fn run() -> Result<Server, anyhow::Error> {
+    let server = HttpServer::new(move || {
+        App::new()
+            .service(get_all_patients)
+            .service(get_patient)
+            .service(create_patient)
+            .service(update_patient)
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run();
 
     Ok(server)
 }
