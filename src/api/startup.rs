@@ -7,8 +7,8 @@ pub struct Application {
 }
 
 impl Application {
-    pub async fn start() -> Result<Self, anyhow::Error> {
-        let server = run().await?;
+    pub async fn start(address: &str, port: u16) -> Result<Self, anyhow::Error> {
+        let server = run(address, port).await?;
 
         Ok(Self { server })
     }
@@ -18,7 +18,7 @@ impl Application {
     }
 }
 
-async fn run() -> Result<Server, anyhow::Error> {
+async fn run(address: &str, port: u16) -> Result<Server, anyhow::Error> {
     let server = HttpServer::new(move || {
         App::new()
             .service(get_all_patients)
@@ -26,7 +26,7 @@ async fn run() -> Result<Server, anyhow::Error> {
             .service(create_patient)
             .service(update_patient)
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind((address, port))?
     .run();
 
     Ok(server)
