@@ -1,5 +1,5 @@
 mod api;
-pub use api::Application;
+pub use api::{Application, Environment, Settings};
 
 mod application;
 mod domain;

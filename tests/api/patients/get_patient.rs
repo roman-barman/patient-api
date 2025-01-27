@@ -1,17 +1,12 @@
-use crate::helpers::run_app;
+use crate::helpers::TestApplication;
 
 #[tokio::test]
 async fn get_patient_works() {
     //Arrange
-    run_app(8083).await;
-    let client = reqwest::Client::new();
+    let app = TestApplication::run_app().await;
 
     //Act
-    let response = client
-        .get("http:/127.0.0.1:8083/patients/12345")
-        .send()
-        .await
-        .expect("Could not send request to server");
+    let response = app.get_patient_by_id("12345").await;
 
     //Assert
     assert!(response.status().is_success());
