@@ -1,10 +1,11 @@
+use crate::api::configuration::Settings;
 use crate::api::routes::{create_patient, get_all_patients, get_patient, update_patient};
 use crate::application::{CommandHandler, CreatePatientCommand, CreatePatientHandler, Repository};
 use crate::domain::Patient;
 use crate::infrastructure::PostgresRepository;
 use actix_web::dev::Server;
 use actix_web::{web, App, HttpServer};
-use sqlx::postgres::{PgConnectOptions, PgPoolOptions, PgSslMode};
+use sqlx::postgres::PgPoolOptions;
 use std::sync::Arc;
 
 pub struct Application {
@@ -13,15 +14,9 @@ pub struct Application {
 
 impl Application {
     pub async fn start(address: &str, port: u16) -> Result<Self, anyhow::Error> {
-        let pg_pool = PgPoolOptions::new().connect_lazy_with(
-            PgConnectOptions::new()
-                .host("localhost")
-                .username("postgres")
-                .password("password")
-                .port(5432)
-                .database("patient_db")
-                .ssl_mode(PgSslMode::Prefer),
-        );
+        let settings = Settings::read_configuration()?;
+        let pg_pool =
+            PgPoolOptions::new().connect_lazy_with(settings.database.get_connection_string());
         let repository = Arc::new(PostgresRepository::new(pg_pool)) as Arc<dyn Repository + Sync>;
         let handler = Arc::new(CreatePatientHandler::new(repository.clone()))
             as Arc<dyn CommandHandler<CreatePatientCommand, Patient>>;
