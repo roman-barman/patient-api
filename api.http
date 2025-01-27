@@ -10,6 +10,19 @@ GET http://localhost:8080/patients/12345
 
 ### Create patient
 POST http://localhost:8080/patients
+Content-Type: application/json
+
+{
+  "name": {
+    "family": "Zanko",
+    "given": [
+      "Raman"
+    ]
+  },
+  "gender": "Male",
+  "birth_date": "2024-01-01",
+  "active": true
+}
 
 ###
 
