@@ -1,3 +1,4 @@
+use crate::api::api_error::ApiError;
 use crate::application::{CommandHandler, CreatePatientCommand};
 use crate::domain::{Gender, Patient, PatientValidationError};
 use actix_web::{post, web, HttpResponse};
@@ -27,7 +28,7 @@ pub struct RequestPatient {
 pub async fn create_patient(
     handler: web::Data<Box<dyn CommandHandler<CreatePatientCommand, Patient>>>,
     request: web::Json<RequestPatient>,
-) -> HttpResponse {
+) -> Result<HttpResponse, ApiError> {
     let patient = request.into_inner();
     let gender: Option<Gender> = patient.gender.map(|request_gender| request_gender.into());
     let birth_date = NaiveDate::parse_from_str(&patient.birth_date, "%Y-%m-%d");
@@ -40,10 +41,10 @@ pub async fn create_patient(
                     let datetime = NaiveDateTime::new(birth_date, time);
                     Utc.from_utc_datetime(&datetime)
                 }
-                None => return HttpResponse::BadRequest().finish(),
+                None => return Err(ApiError::InternalServerError),
             }
         }
-        Err(_) => return HttpResponse::BadRequest().finish(),
+        Err(_) => return Err(ApiError::BadRequest("invalid birth date format".into())),
     };
     let command = CreatePatientCommand::new(
         patient.name.family,
@@ -55,15 +56,13 @@ pub async fn create_patient(
     let result = handler.handle_command(command).await;
 
     match result {
-        Ok(_) => HttpResponse::Ok().finish(),
+        Ok(_) => Ok(HttpResponse::Ok().finish()),
         Err(e) => {
-            if e.root_cause()
-                .downcast_ref::<PatientValidationError>()
-                .is_some()
+            if let Some(validation_error) = e.root_cause().downcast_ref::<PatientValidationError>()
             {
-                HttpResponse::BadRequest().finish()
+                Err(ApiError::BadRequest(validation_error.to_string()))
             } else {
-                HttpResponse::InternalServerError().finish()
+                Err(ApiError::InternalServerError)
             }
         }
     }
