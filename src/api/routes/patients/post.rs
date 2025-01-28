@@ -2,7 +2,6 @@ use crate::application::{CommandHandler, CreatePatientCommand};
 use crate::domain::{Gender, Patient, PatientValidationError};
 use actix_web::{post, web, HttpResponse};
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime, TimeZone, Utc};
-use std::sync::Arc;
 
 #[derive(serde::Deserialize)]
 pub enum RequestGender {
@@ -26,7 +25,7 @@ pub struct RequestPatient {
 
 #[post("/patients")]
 pub async fn create_patient(
-    handler: web::Data<Arc<dyn CommandHandler<CreatePatientCommand, Patient>>>,
+    handler: web::Data<Box<dyn CommandHandler<CreatePatientCommand, Patient>>>,
     request: web::Json<RequestPatient>,
 ) -> HttpResponse {
     let patient = request.into_inner();
