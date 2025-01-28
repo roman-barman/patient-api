@@ -1,4 +1,5 @@
 use crate::api::api_error::ApiError;
+use crate::api::routes::patients::patient_response::PatientResponse;
 use crate::application::{CommandHandler, CreatePatientCommand};
 use crate::domain::{Gender, Patient, PatientValidationError};
 use actix_web::{post, web, HttpResponse};
@@ -56,7 +57,9 @@ pub async fn create_patient(
     let result = handler.handle_command(command).await;
 
     match result {
-        Ok(_) => Ok(HttpResponse::Ok().finish()),
+        Ok(patient) => Ok(HttpResponse::Created()
+            .append_header(("Location", format!("/patients/{}", patient.name.id)))
+            .json(PatientResponse::from(patient))),
         Err(e) => {
             if let Some(validation_error) = e.root_cause().downcast_ref::<PatientValidationError>()
             {

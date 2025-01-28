@@ -7,5 +7,7 @@ pub use get::get_patient;
 mod post;
 pub use post::create_patient;
 
+mod patient_response;
 mod put;
+
 pub use put::update_patient;
