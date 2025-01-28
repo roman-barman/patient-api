@@ -2,14 +2,13 @@ use crate::application::{CommandHandler, Repository};
 use crate::domain::{Gender, Patient};
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
-use std::sync::Arc;
 
 pub struct CreatePatientHandler {
-    repository: Arc<dyn Repository>,
+    repository: Box<dyn Repository>,
 }
 
 impl CreatePatientHandler {
-    pub fn new(repository: Arc<dyn Repository>) -> Self {
+    pub fn new(repository: Box<dyn Repository>) -> Self {
         Self { repository }
     }
 }
