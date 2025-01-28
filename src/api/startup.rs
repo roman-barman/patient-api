@@ -18,7 +18,7 @@ impl Application {
         let listener = TcpListener::bind(settings.application.get_application_address())?;
         let address = listener.local_addr()?.to_string();
         let pg_pool =
-            PgPoolOptions::new().connect_lazy_with(settings.database.get_connection_string());
+            PgPoolOptions::new().connect_lazy_with(settings.database.get_connection_options());
         let repository = Box::new(PostgresRepository::new(pg_pool)) as Box<dyn Repository>;
         let handler = Box::new(CreatePatientHandler::new(repository))
             as Box<dyn CommandHandler<CreatePatientCommand, Patient>>;
