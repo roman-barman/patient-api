@@ -1,27 +1,27 @@
 use crate::domain::{Gender, Name, Patient};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Serialize)]
-enum GenderResponse {
+#[derive(Serialize, Deserialize)]
+pub enum GenderResponse {
     Male,
     Female,
 }
 
-#[derive(Serialize)]
-struct NameResponse {
-    id: Uuid,
-    family: String,
-    given: Option<Vec<String>>,
+#[derive(Serialize, Deserialize)]
+pub struct NameResponse {
+    pub id: Uuid,
+    pub family: String,
+    pub given: Option<Vec<String>>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct PatientResponse {
-    name: NameResponse,
-    gender: Option<GenderResponse>,
-    birth_date: String,
-    active: bool,
-    version: i64,
+    pub name: NameResponse,
+    pub gender: Option<GenderResponse>,
+    pub birth_date: String,
+    pub active: bool,
+    pub version: i64,
 }
 
 impl From<Patient> for PatientResponse {

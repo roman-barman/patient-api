@@ -82,12 +82,12 @@ pub struct DatabaseSettings {
     #[serde(deserialize_with = "deserialize_number_from_string")]
     port: u16,
     host: String,
-    database_name: String,
+    pub database_name: String,
     require_ssl: bool,
 }
 
 impl DatabaseSettings {
-    pub fn get_connection_string(&self) -> PgConnectOptions {
+    pub fn get_connection_options(&self) -> PgConnectOptions {
         let ssl_mode = if self.require_ssl {
             PgSslMode::Require
         } else {

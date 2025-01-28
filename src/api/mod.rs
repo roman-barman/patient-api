@@ -6,3 +6,4 @@ pub use configuration::*;
 
 mod api_error;
 mod routes;
+pub use routes::*;
