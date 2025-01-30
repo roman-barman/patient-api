@@ -69,3 +69,35 @@ sqlx database create
 sqlx migrate run
 
 >&2 echo "Postgres has been migrated, ready to go!"
+
+# Allow to skip Docker if a dockerized Jaeger database is already running
+if [[ -z "${SKIP_DOCKER}" ]]
+then
+  # if a Jaeger container is running, print instructions to kill it and exit
+  RUNNING_JAEGER_CONTAINER=$(docker ps --filter 'name=jaeger' --format '{{.ID}}')
+  if [[ -n $RUNNING_JAEGER_CONTAINER ]]; then
+    echo >&2 "there is a postgres container already running, kill it with"
+    echo >&2 "    docker kill ${RUNNING_JAEGER_CONTAINER}"
+    exit 1
+  fi
+  CONTAINER_NAME="jaeger_$(date '+%s')"
+  # Launch postgres using Docker
+  docker run \
+      --env COLLECTOR_ZIPKIN_HOST_PORT="9411" \
+      --env COLLECTOR_OTLP_ENABLED=true \
+      --publish 6831:6831/udp \
+      --publish 6832:6832/udp \
+      --publish 5778:5778 \
+      --publish 16686:16686 \
+      --publish 4317:4317 \
+      --publish 4318:4318 \
+      --publish 14250:14250 \
+      --publish 14268:14268 \
+      --publish 14269:14269 \
+      --publish 9411:9411 \
+      --detach \
+      --name "${CONTAINER_NAME}" \
+      jaegertracing/all-in-one
+fi
+
+>&2 echo "Jaeger is up and running"
