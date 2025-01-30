@@ -17,6 +17,7 @@ impl PostgresRepository {
 
 #[async_trait]
 impl Repository for PostgresRepository {
+    #[tracing::instrument(name = "Add patient to the DB", skip(self))]
     async fn create(&self, patient: &Patient) -> Result<(), anyhow::Error> {
         let db_model = PatientDbModel::from(patient.clone());
         sqlx::query_unchecked!(

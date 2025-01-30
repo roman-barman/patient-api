@@ -7,6 +7,7 @@ use actix_web::dev::Server;
 use actix_web::{web, App, HttpServer};
 use sqlx::postgres::PgPoolOptions;
 use std::net::TcpListener;
+use tracing_actix_web::TracingLogger;
 
 pub struct Application {
     server: Server,
@@ -43,6 +44,7 @@ async fn run(
     let handler = web::Data::new(handler);
     let server = HttpServer::new(move || {
         App::new()
+            .wrap(TracingLogger::default())
             .service(get_all_patients)
             .service(get_patient)
             .service(create_patient)
