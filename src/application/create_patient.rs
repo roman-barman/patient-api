@@ -13,6 +13,7 @@ impl CreatePatientHandler {
     }
 }
 
+#[derive(Debug)]
 pub struct CreatePatientCommand {
     family: String,
     given: Option<Vec<String>>,
@@ -41,6 +42,7 @@ impl CreatePatientCommand {
 
 #[async_trait]
 impl CommandHandler<CreatePatientCommand, Patient> for CreatePatientHandler {
+    #[tracing::instrument(name = "Handle create patient command", skip(self))]
     async fn handle_command(
         &self,
         command: CreatePatientCommand,

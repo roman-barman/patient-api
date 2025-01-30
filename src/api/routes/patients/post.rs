@@ -5,19 +5,19 @@ use crate::domain::{Gender, Patient, PatientValidationError};
 use actix_web::{post, web, HttpResponse};
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime, TimeZone, Utc};
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Debug)]
 pub enum RequestGender {
     Male,
     Female,
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Debug)]
 pub struct RequestName {
     family: String,
     given: Option<Vec<String>>,
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Debug)]
 pub struct RequestPatient {
     name: RequestName,
     gender: Option<RequestGender>,
@@ -26,6 +26,7 @@ pub struct RequestPatient {
 }
 
 #[post("/patients")]
+#[tracing::instrument(name = "Adding a new patient", skip(handler))]
 pub async fn create_patient(
     handler: web::Data<Box<dyn CommandHandler<CreatePatientCommand, Patient>>>,
     request: web::Json<RequestPatient>,
