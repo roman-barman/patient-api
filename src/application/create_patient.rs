@@ -1,7 +1,10 @@
 use crate::application::{CommandHandler, Repository};
-use crate::domain::{Gender, Patient};
+use crate::domain::{
+    BirthDate, BirthDateValidationError, Family, FamilyValidationError, Gender, Given,
+    GivenValidationError, Name, Patient,
+};
 use async_trait::async_trait;
-use chrono::{DateTime, Utc};
+use thiserror::Error;
 
 pub struct CreatePatientHandler {
     repository: Box<dyn Repository>,
@@ -18,7 +21,7 @@ pub struct CreatePatientCommand {
     family: String,
     given: Option<Vec<String>>,
     gender: Option<Gender>,
-    birth_date: DateTime<Utc>,
+    birth_date: String,
     active: bool,
 }
 
@@ -27,7 +30,7 @@ impl CreatePatientCommand {
         family: String,
         given: Option<Vec<String>>,
         gender: Option<Gender>,
-        birth_date: DateTime<Utc>,
+        birth_date: String,
         active: bool,
     ) -> Self {
         Self {
@@ -47,16 +50,32 @@ impl CommandHandler<CreatePatientCommand, Patient> for CreatePatientHandler {
         &self,
         command: CreatePatientCommand,
     ) -> Result<Patient, anyhow::Error> {
-        let patient = Patient::new(
-            command.family,
-            command.given,
-            command.gender,
-            command.birth_date,
-            command.active,
-        )?;
+        let patient: Patient = command.try_into()?;
 
         self.repository.create(&patient).await?;
 
         Ok(patient)
     }
+}
+
+impl TryFrom<CreatePatientCommand> for Patient {
+    type Error = CreatePatientValidationError;
+    fn try_from(value: CreatePatientCommand) -> Result<Self, Self::Error> {
+        let family = Family::try_from(value.family)?;
+        let given = value.given.map(Given::try_from).transpose()?;
+        let name = Name::new(family, given);
+
+        let birth_date = BirthDate::try_from(value.birth_date)?;
+        Ok(Patient::new(name, value.gender, birth_date, value.active))
+    }
+}
+
+#[derive(Error, Debug)]
+pub enum CreatePatientValidationError {
+    #[error(transparent)]
+    Family(#[from] FamilyValidationError),
+    #[error(transparent)]
+    Given(#[from] GivenValidationError),
+    #[error(transparent)]
+    BirthDay(#[from] BirthDateValidationError),
 }

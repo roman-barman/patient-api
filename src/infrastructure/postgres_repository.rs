@@ -41,18 +41,11 @@ impl Repository for PostgresRepository {
     }
 }
 
-#[derive(sqlx::Type)]
-#[sqlx(type_name = "gender", rename_all = "lowercase")]
-enum GenderDbModel {
-    Male,
-    Female,
-}
-
 struct PatientDbModel {
     id: Uuid,
     family: String,
     given: Option<Vec<String>>,
-    gender: Option<GenderDbModel>,
+    gender: Option<Gender>,
     birth_date: DateTime<Utc>,
     active: bool,
     version: DateTime<Local>,
@@ -61,22 +54,13 @@ struct PatientDbModel {
 impl From<Patient> for PatientDbModel {
     fn from(patient: Patient) -> Self {
         Self {
-            id: patient.name.id,
-            family: patient.name.family,
-            given: patient.name.given,
-            gender: patient.gender.map(|gender| gender.into()),
-            birth_date: patient.birth_date,
+            id: patient.name.id.into(),
+            family: patient.name.family.into(),
+            given: patient.name.given.map(|x| x.into()),
+            gender: patient.gender,
+            birth_date: patient.birth_date.into(),
             active: patient.active,
-            version: patient.version,
-        }
-    }
-}
-
-impl From<Gender> for GenderDbModel {
-    fn from(value: Gender) -> Self {
-        match value {
-            Gender::Male => GenderDbModel::Male,
-            Gender::Female => GenderDbModel::Female,
+            version: patient.version.into(),
         }
     }
 }
