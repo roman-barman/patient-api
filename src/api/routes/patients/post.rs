@@ -1,26 +1,19 @@
 use crate::api::api_error::ApiError;
 use crate::api::routes::patients::patient_response::PatientResponse;
-use crate::application::{CommandHandler, CreatePatientCommand};
-use crate::domain::{Gender, Patient, PatientValidationError};
+use crate::application::{CommandHandler, CreatePatientCommand, CreatePatientValidationError};
+use crate::domain::{Gender, Patient};
 use actix_web::{post, web, HttpResponse};
-use chrono::{NaiveDate, NaiveDateTime, NaiveTime, TimeZone, Utc};
 
 #[derive(serde::Deserialize, Debug)]
-pub enum RequestGender {
-    Male,
-    Female,
-}
-
-#[derive(serde::Deserialize, Debug)]
-pub struct RequestName {
+pub struct CreateRequestName {
     family: String,
     given: Option<Vec<String>>,
 }
 
 #[derive(serde::Deserialize, Debug)]
-pub struct RequestPatient {
-    name: RequestName,
-    gender: Option<RequestGender>,
+pub struct CreateRequestPatient {
+    name: CreateRequestName,
+    gender: Option<Gender>,
     birth_date: String,
     active: bool,
 }
@@ -29,32 +22,10 @@ pub struct RequestPatient {
 #[tracing::instrument(name = "Adding a new patient", skip(handler))]
 pub async fn create_patient(
     handler: web::Data<Box<dyn CommandHandler<CreatePatientCommand, Patient>>>,
-    request: web::Json<RequestPatient>,
+    request: web::Json<CreateRequestPatient>,
 ) -> Result<HttpResponse, ApiError> {
     let patient = request.into_inner();
-    let gender: Option<Gender> = patient.gender.map(|request_gender| request_gender.into());
-    let birth_date = NaiveDate::parse_from_str(&patient.birth_date, "%Y-%m-%d");
-    let birth_date = match birth_date {
-        Ok(birth_date) => {
-            let time = NaiveTime::from_hms_opt(0, 0, 0);
-
-            match time {
-                Some(time) => {
-                    let datetime = NaiveDateTime::new(birth_date, time);
-                    Utc.from_utc_datetime(&datetime)
-                }
-                None => return Err(ApiError::InternalServerError),
-            }
-        }
-        Err(_) => return Err(ApiError::BadRequest("invalid birth date format".into())),
-    };
-    let command = CreatePatientCommand::new(
-        patient.name.family,
-        patient.name.given,
-        gender,
-        birth_date,
-        patient.active,
-    );
+    let command = CreatePatientCommand::from(patient);
     let result = handler.handle_command(command).await;
 
     match result {
@@ -62,7 +33,9 @@ pub async fn create_patient(
             .append_header(("Location", format!("/patients/{}", patient.name.id)))
             .json(PatientResponse::from(patient))),
         Err(e) => {
-            if let Some(validation_error) = e.root_cause().downcast_ref::<PatientValidationError>()
+            if let Some(validation_error) = e
+                .root_cause()
+                .downcast_ref::<CreatePatientValidationError>()
             {
                 Err(ApiError::BadRequest(validation_error.to_string()))
             } else {
@@ -72,11 +45,14 @@ pub async fn create_patient(
     }
 }
 
-impl From<RequestGender> for Gender {
-    fn from(request_gender: RequestGender) -> Self {
-        match request_gender {
-            RequestGender::Male => Gender::Male,
-            RequestGender::Female => Gender::Female,
-        }
+impl From<CreateRequestPatient> for CreatePatientCommand {
+    fn from(request_patient: CreateRequestPatient) -> Self {
+        CreatePatientCommand::new(
+            request_patient.name.family,
+            request_patient.name.given,
+            request_patient.gender,
+            request_patient.birth_date,
+            request_patient.active,
+        )
     }
 }

@@ -1,2 +1,12 @@
+mod birth_date;
+pub use birth_date::*;
+mod family;
+pub use family::*;
+mod gender;
+pub use gender::*;
+mod given;
+pub use given::*;
+mod name_id;
 mod patient;
 pub use patient::*;
+mod version;
