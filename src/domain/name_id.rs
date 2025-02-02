@@ -27,3 +27,9 @@ impl Display for NameId {
         self.0.fmt(f)
     }
 }
+
+impl AsRef<Uuid> for NameId {
+    fn as_ref(&self) -> &Uuid {
+        &self.0
+    }
+}

@@ -50,6 +50,12 @@ impl From<BirthDate> for DateTime<Utc> {
     }
 }
 
+impl AsRef<DateTime<Utc>> for BirthDate {
+    fn as_ref(&self) -> &DateTime<Utc> {
+        &self.0
+    }
+}
+
 impl From<BirthDate> for String {
     fn from(value: BirthDate) -> Self {
         format!("{}", value.0.format(DATE_FORMAT))

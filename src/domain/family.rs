@@ -27,6 +27,12 @@ impl From<Family> for String {
     }
 }
 
+impl AsRef<str> for Family {
+    fn as_ref(&self) -> &str {
+        self.0.as_str()
+    }
+}
+
 #[derive(Error, Debug, PartialEq, Eq)]
 pub enum FamilyValidationError {
     #[error("family is empty")]

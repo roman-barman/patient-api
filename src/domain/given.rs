@@ -30,6 +30,12 @@ impl From<Given> for Vec<String> {
     }
 }
 
+impl AsRef<Vec<String>> for Given {
+    fn as_ref(&self) -> &Vec<String> {
+        &self.0
+    }
+}
+
 #[cfg(test)]
 mod given_tests {
     use crate::domain::given::{Given, GivenValidationError, GIVEN_MAX_LENGTH};
