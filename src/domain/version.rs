@@ -20,3 +20,9 @@ impl From<Version> for i64 {
         version.0.timestamp_millis()
     }
 }
+
+impl AsRef<DateTime<Local>> for Version {
+    fn as_ref(&self) -> &DateTime<Local> {
+        &self.0
+    }
+}
