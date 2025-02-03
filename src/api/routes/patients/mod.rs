@@ -5,10 +5,10 @@ mod get;
 pub use get::get_patient;
 
 mod post;
-pub use post::create_patient;
+pub use post::{__path_create_patient, create_patient};
 
 mod patient_response;
 pub use patient_response::*;
-mod put;
 
+mod put;
 pub use put::update_patient;

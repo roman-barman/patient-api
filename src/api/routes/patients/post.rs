@@ -4,13 +4,13 @@ use crate::application::{CommandHandler, CreatePatientCommand, CreatePatientVali
 use crate::domain::{Gender, Patient};
 use actix_web::{post, web, HttpResponse};
 
-#[derive(serde::Deserialize, Debug)]
+#[derive(serde::Deserialize, Debug, utoipa::ToSchema)]
 pub struct CreateRequestName {
     family: String,
     given: Option<Vec<String>>,
 }
 
-#[derive(serde::Deserialize, Debug)]
+#[derive(serde::Deserialize, Debug, utoipa::ToSchema)]
 pub struct CreateRequestPatient {
     name: CreateRequestName,
     gender: Option<Gender>,
@@ -18,6 +18,14 @@ pub struct CreateRequestPatient {
     active: bool,
 }
 
+#[utoipa::path(
+    description = "Create a new patient",
+    responses(
+        (status = 201, description = "Patient was created", body = PatientResponse),
+        (status = 400, description = "Invalid request body", body = String, content_type = "text/plain; charset=utf-8")
+    ),
+    request_body(content = CreateRequestPatient, description = "Patient to store the API", content_type = "application/json"),
+)]
 #[post("/patients")]
 #[tracing::instrument(name = "Adding a new patient", skip(handler))]
 pub async fn create_patient(
