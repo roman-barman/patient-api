@@ -2,14 +2,14 @@ use crate::domain::{Gender, Name, Patient};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, utoipa::ToSchema)]
 pub struct NameResponse {
     pub id: Uuid,
     pub family: String,
     pub given: Option<Vec<String>>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, utoipa::ToSchema)]
 pub struct PatientResponse {
     pub name: NameResponse,
     pub gender: Option<Gender>,

@@ -30,6 +30,8 @@ tracing-opentelemetry = "0.28.0"
 opentelemetry_sdk = { version = "0.27.1", features = ["rt-tokio"] }
 opentelemetry-otlp = { version = "0.27.0", features = ["tokio"] }
 opentelemetry = "0.27.1"
+utoipa = { version = "5", features = ["actix_extras", "uuid"] }
+utoipa-swagger-ui = { version = "9", features = ["actix-web"] }
 
 [dependencies.reqwest]
 version = "0.12"

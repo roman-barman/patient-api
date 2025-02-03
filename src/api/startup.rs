@@ -1,5 +1,6 @@
+use crate::api::api_doc::ApiDoc;
 use crate::api::configuration::Settings;
-use crate::api::routes::{create_patient, get_all_patients, get_patient, update_patient};
+use crate::api::{create_patient, get_all_patients, get_patient, update_patient};
 use crate::application::{CommandHandler, CreatePatientCommand, CreatePatientHandler, Repository};
 use crate::domain::Patient;
 use crate::infrastructure::PostgresRepository;
@@ -8,6 +9,8 @@ use actix_web::{web, App, HttpServer};
 use sqlx::postgres::PgPoolOptions;
 use std::net::TcpListener;
 use tracing_actix_web::TracingLogger;
+use utoipa::OpenApi;
+use utoipa_swagger_ui::SwaggerUi;
 
 pub struct Application {
     server: Server,
@@ -49,6 +52,10 @@ async fn run(
             .service(get_patient)
             .service(create_patient)
             .service(update_patient)
+            .service(
+                SwaggerUi::new("/swagger-ui/{_:.*}")
+                    .url("/api-docs/openapi.json", ApiDoc::openapi()),
+            )
             .app_data(handler.clone())
     })
     .listen(listener)?
