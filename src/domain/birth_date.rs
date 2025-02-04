@@ -14,6 +14,12 @@ pub enum BirthDateValidationError {
     InvalidBirthDateFormat,
 }
 
+impl BirthDate {
+    pub fn new(birth_date: DateTime<Utc>) -> Self {
+        Self(birth_date)
+    }
+}
+
 impl TryFrom<String> for BirthDate {
     type Error = BirthDateValidationError;
 

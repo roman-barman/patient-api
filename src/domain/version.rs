@@ -3,6 +3,12 @@ use chrono::{DateTime, Local};
 #[derive(Debug, Clone)]
 pub struct Version(DateTime<Local>);
 
+impl Version {
+    pub fn new(date: DateTime<Local>) -> Self {
+        Self(date)
+    }
+}
+
 impl Default for Version {
     fn default() -> Self {
         Self(Local::now())

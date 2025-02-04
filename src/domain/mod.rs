@@ -7,6 +7,8 @@ pub use gender::*;
 mod given;
 pub use given::*;
 mod name_id;
+pub use name_id::*;
 mod patient;
 pub use patient::*;
 mod version;
+pub use version::*;

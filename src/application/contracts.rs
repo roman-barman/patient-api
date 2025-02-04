@@ -1,9 +1,11 @@
 use crate::domain::Patient;
 use async_trait::async_trait;
+use uuid::Uuid;
 
 #[async_trait]
 pub trait Repository: Send + Sync {
     async fn create(&self, patient: &Patient) -> Result<(), anyhow::Error>;
+    async fn get_by_id(&self, id: &Uuid) -> Result<Option<Patient>, anyhow::Error>;
 }
 
 #[async_trait]

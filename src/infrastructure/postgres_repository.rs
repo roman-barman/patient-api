@@ -1,7 +1,12 @@
 use crate::application::Repository;
+use crate::domain::Gender;
 use crate::domain::Patient;
+use crate::infrastructure::patient_db_model::PatientDbModel;
 use async_trait::async_trait;
+use chrono::DateTime;
+use chrono::Local;
 use sqlx::PgPool;
+use uuid::Uuid;
 
 pub struct PostgresRepository {
     pool: PgPool,
@@ -35,5 +40,35 @@ impl Repository for PostgresRepository {
         .await?;
 
         Ok(())
+    }
+
+    #[tracing::instrument(name = "Get patient by ID from the DB", skip(self))]
+    async fn get_by_id(&self, id: &Uuid) -> Result<Option<Patient>, anyhow::Error> {
+        let patient = sqlx::query_as!(
+            PatientDbModel,
+            r#"
+                SELECT
+                    id,
+                    family,
+                    given,
+                    gender as "gender: Gender",
+                    birth_date,
+                    active,
+                    version as "version: DateTime<Local>"
+                FROM patients
+                WHERE id = $1
+            "#,
+            id
+        )
+        .fetch_optional(&self.pool)
+        .await?;
+
+        match patient {
+            Some(r) => {
+                let patient = Patient::try_from(r)?;
+                Ok(Some(patient))
+            }
+            None => Ok(None),
+        }
     }
 }

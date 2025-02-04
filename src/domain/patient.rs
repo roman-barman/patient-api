@@ -29,6 +29,10 @@ impl Name {
             given,
         }
     }
+
+    pub fn new_with_id(id: NameId, family: Family, given: Option<Given>) -> Self {
+        Self { id, family, given }
+    }
 }
 
 impl Patient {
@@ -39,6 +43,22 @@ impl Patient {
             birth_date,
             active,
             version: Version::default(),
+        }
+    }
+
+    pub fn new_with_version(
+        name: Name,
+        gender: Option<Gender>,
+        birth_date: BirthDate,
+        active: bool,
+        version: Version,
+    ) -> Self {
+        Self {
+            name,
+            gender,
+            birth_date,
+            active,
+            version,
         }
     }
 }
