@@ -4,14 +4,15 @@ use crate::domain::{
     GivenValidationError, Name, Patient,
 };
 use async_trait::async_trait;
+use std::sync::Arc;
 use thiserror::Error;
 
 pub struct CreatePatientHandler {
-    repository: Box<dyn Repository>,
+    repository: Arc<dyn Repository>,
 }
 
 impl CreatePatientHandler {
-    pub fn new(repository: Box<dyn Repository>) -> Self {
+    pub fn new(repository: Arc<dyn Repository>) -> Self {
         Self { repository }
     }
 }
