@@ -18,7 +18,7 @@ impl TryFrom<PatientDbModel> for Patient {
     fn try_from(model: PatientDbModel) -> Result<Self, Self::Error> {
         let name_id = NameId::new(model.id);
         let family = Family::try_from(model.family)?;
-        let given = model.given.map(|x| Given::try_from(x)).transpose()?;
+        let given = model.given.map(Given::try_from).transpose()?;
         let name = Name::new_with_id(name_id, family, given);
 
         let gender = model.gender;
