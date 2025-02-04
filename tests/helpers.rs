@@ -49,7 +49,7 @@ impl TestApplication {
             .expect("Could not send request to server")
     }
 
-    pub async fn get_patient_by_id(&self, id: &str) -> Response {
+    pub async fn get_patient_by_id(&self, id: &Uuid) -> Response {
         self.api_client
             .get(format!("{}/patients/{}", &self.address, id))
             .send()
