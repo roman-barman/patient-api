@@ -4,6 +4,12 @@ use uuid::Uuid;
 #[derive(Debug, Clone)]
 pub struct NameId(Uuid);
 
+impl NameId {
+    pub fn new(id: Uuid) -> Self {
+        Self(id)
+    }
+}
+
 impl Default for NameId {
     fn default() -> Self {
         NameId(Uuid::new_v4())
