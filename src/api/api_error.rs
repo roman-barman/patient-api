@@ -7,6 +7,8 @@ use thiserror::Error;
 pub enum ApiError {
     #[error("{0}")]
     BadRequest(String),
+    #[error("Patient not found")]
+    NotFound,
     #[error("Unexpected error")]
     InternalServerError,
 }
@@ -15,6 +17,7 @@ impl error::ResponseError for ApiError {
     fn status_code(&self) -> StatusCode {
         match *self {
             ApiError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
+            ApiError::NotFound => StatusCode::NOT_FOUND,
             ApiError::BadRequest(_) => StatusCode::BAD_REQUEST,
         }
     }
