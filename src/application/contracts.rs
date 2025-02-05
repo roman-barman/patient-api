@@ -6,6 +6,8 @@ use uuid::Uuid;
 pub trait Repository: Send + Sync {
     async fn create(&self, patient: &Patient) -> Result<(), anyhow::Error>;
     async fn get_by_id(&self, id: &Uuid) -> Result<Option<Patient>, anyhow::Error>;
+    async fn exist(&self, id: &Uuid) -> Result<bool, anyhow::Error>;
+    async fn update(&self, patient: &Patient) -> Result<bool, anyhow::Error>;
 }
 
 #[async_trait]
