@@ -57,9 +57,13 @@ impl TestApplication {
             .expect("Could not send request to server")
     }
 
-    pub async fn update_patient(&self, id: &str) -> Response {
+    pub async fn update_patient<Body>(&self, id: &Uuid, body: &Body) -> Response
+    where
+        Body: serde::Serialize,
+    {
         self.api_client
             .put(format!("{}/patients/{}", &self.address, id))
+            .json(body)
             .send()
             .await
             .expect("Could not send request to server")
