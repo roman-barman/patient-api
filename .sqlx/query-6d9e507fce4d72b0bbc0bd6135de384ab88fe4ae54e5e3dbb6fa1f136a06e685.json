@@ -1,0 +1,31 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                UPDATE patients\n                SET\n                    family = $1,\n                    given = $2,\n                    gender = $3,\n                    birth_date = $4,\n                    active = $5,\n                    version = $6\n                WHERE\n                    id = $7 AND version = $8\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "TextArray",
+        {
+          "Custom": {
+            "name": "gender",
+            "kind": {
+              "Enum": [
+                "male",
+                "female"
+              ]
+            }
+          }
+        },
+        "Timestamptz",
+        "Bool",
+        "Timestamptz",
+        "Uuid",
+        "Timestamptz"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "6d9e507fce4d72b0bbc0bd6135de384ab88fe4ae54e5e3dbb6fa1f136a06e685"
+}
