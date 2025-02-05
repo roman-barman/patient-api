@@ -9,6 +9,8 @@ pub enum ApiError {
     BadRequest(String),
     #[error("Patient not found")]
     NotFound,
+    #[error("Patient was changed")]
+    Conflict,
     #[error("Unexpected error")]
     InternalServerError,
 }
@@ -19,6 +21,7 @@ impl error::ResponseError for ApiError {
             ApiError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
             ApiError::NotFound => StatusCode::NOT_FOUND,
             ApiError::BadRequest(_) => StatusCode::BAD_REQUEST,
+            ApiError::Conflict => StatusCode::CONFLICT,
         }
     }
 

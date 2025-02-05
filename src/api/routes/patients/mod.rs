@@ -11,4 +11,4 @@ mod patient_response;
 pub use patient_response::*;
 
 mod put;
-pub use put::update_patient;
+pub use put::{__path_update_patient, update_patient};

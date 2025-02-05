@@ -67,11 +67,11 @@ impl CommandHandler<UpdatePatientCommand, ()> for UpdatePatientHandler {
         let is_exist = self.repository.exist(patient.name.id.as_ref()).await?;
 
         if is_exist {
-            Err(anyhow::Error::new(UpdatePatientError::PatientDoesNotExist))
-        } else {
             Err(anyhow::Error::new(
                 UpdatePatientError::PatientVersionWasChanged,
             ))
+        } else {
+            Err(anyhow::Error::new(UpdatePatientError::PatientDoesNotExist))
         }
     }
 }

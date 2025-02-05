@@ -24,14 +24,14 @@ impl From<Version> for DateTime<Local> {
 
 impl From<Version> for i64 {
     fn from(version: Version) -> Self {
-        version.0.timestamp_millis()
+        version.0.timestamp_micros()
     }
 }
 
 impl TryFrom<i64> for Version {
     type Error = VersionValidationError;
     fn try_from(value: i64) -> Result<Self, Self::Error> {
-        let result = Local.timestamp_millis_opt(value).single();
+        let result = Local.timestamp_micros(value).single();
         match result {
             Some(value) => Ok(Self(value)),
             None => Err(VersionValidationError::InvalidVersion),
