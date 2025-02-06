@@ -1,9 +1,10 @@
 use crate::api::api_doc::ApiDoc;
 use crate::api::configuration::Settings;
-use crate::api::{create_patient, get_all_patients, get_patient, update_patient};
+use crate::api::{create_patient, delete_patient, get_all_patients, get_patient, update_patient};
 use crate::application::{
-    CommandHandler, CreatePatientCommand, CreatePatientHandler, GetPatientByIdCommand,
-    GetPatientByIdHandler, Repository, UpdatePatientCommand, UpdatePatientHandler,
+    CommandHandler, CreatePatientCommand, CreatePatientHandler, DeletePatientCommand,
+    DeletePatientHandler, GetPatientByIdCommand, GetPatientByIdHandler, Repository,
+    UpdatePatientCommand, UpdatePatientHandler,
 };
 use crate::domain::Patient;
 use crate::infrastructure::PostgresRepository;
@@ -34,11 +35,14 @@ impl Application {
             as Box<dyn CommandHandler<GetPatientByIdCommand, Option<Patient>>>;
         let update_patient_handler = Box::new(UpdatePatientHandler::new(repository.clone()))
             as Box<dyn CommandHandler<UpdatePatientCommand, ()>>;
+        let delete_patient_handler = Box::new(DeletePatientHandler::new(repository.clone()))
+            as Box<dyn CommandHandler<DeletePatientCommand, bool>>;
         let server = run(
             listener,
             create_patient_handler,
             get_patient_by_id_handler,
             update_patient_handler,
+            delete_patient_handler,
         )
         .await?;
 
@@ -59,10 +63,12 @@ async fn run(
     create_patient_handler: Box<dyn CommandHandler<CreatePatientCommand, Patient>>,
     get_patient_by_id_handler: Box<dyn CommandHandler<GetPatientByIdCommand, Option<Patient>>>,
     update_patient_handler: Box<dyn CommandHandler<UpdatePatientCommand, ()>>,
+    delete_patient_handler: Box<dyn CommandHandler<DeletePatientCommand, bool>>,
 ) -> Result<Server, anyhow::Error> {
     let create_patient_handler = web::Data::new(create_patient_handler);
     let get_patient_by_id_handler = web::Data::new(get_patient_by_id_handler);
     let update_patient_handler = web::Data::new(update_patient_handler);
+    let delete_patient_handler = web::Data::new(delete_patient_handler);
     let server = HttpServer::new(move || {
         App::new()
             .wrap(TracingLogger::default())
@@ -70,6 +76,7 @@ async fn run(
             .service(get_patient)
             .service(create_patient)
             .service(update_patient)
+            .service(delete_patient)
             .service(
                 SwaggerUi::new("/swagger-ui/{_:.*}")
                     .url("/api-docs/openapi.json", ApiDoc::openapi()),
@@ -77,6 +84,7 @@ async fn run(
             .app_data(create_patient_handler.clone())
             .app_data(get_patient_by_id_handler.clone())
             .app_data(update_patient_handler.clone())
+            .app_data(delete_patient_handler.clone())
     })
     .listen(listener)?
     .run();

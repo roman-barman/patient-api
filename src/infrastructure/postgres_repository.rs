@@ -112,4 +112,19 @@ impl Repository for PostgresRepository {
 
         Ok(result.rows_affected() > 0)
     }
+
+    #[tracing::instrument(name = "Delete patient in the DB", skip(self))]
+    async fn delete(&self, id: &Uuid) -> Result<bool, anyhow::Error> {
+        let result = sqlx::query!(
+            r#"
+                DELETE FROM patients
+                WHERE id = $1
+            "#,
+            id
+        )
+        .execute(&self.pool)
+        .await?;
+
+        Ok(result.rows_affected() > 0)
+    }
 }

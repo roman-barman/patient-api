@@ -12,3 +12,6 @@ pub use patient_response::*;
 
 mod put;
 pub use put::{__path_update_patient, update_patient};
+
+mod delete;
+pub use delete::{__path_delete_patient, delete_patient};

@@ -69,6 +69,14 @@ impl TestApplication {
             .expect("Could not send request to server")
     }
 
+    pub async fn delete_patient(&self, id: &Uuid) -> Response {
+        self.api_client
+            .delete(format!("{}/patients/{}", &self.address, id))
+            .send()
+            .await
+            .expect("Could not send request to server")
+    }
+
     async fn configure_database(setting: &Settings) {
         let maintenance_settings = {
             let mut maintenance_settings = setting.clone();
