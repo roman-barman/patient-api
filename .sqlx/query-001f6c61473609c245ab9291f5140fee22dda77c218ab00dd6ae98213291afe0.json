@@ -1,0 +1,66 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT\n                    id,\n                    family,\n                    given,\n                    gender as \"gender: Gender\",\n                    birth_date,\n                    active,\n                    version as \"version: DateTime<Local>\"\n                FROM patients\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "family",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "given",
+        "type_info": "TextArray"
+      },
+      {
+        "ordinal": 3,
+        "name": "gender: Gender",
+        "type_info": {
+          "Custom": {
+            "name": "gender",
+            "kind": {
+              "Enum": [
+                "male",
+                "female"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "birth_date",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 5,
+        "name": "active",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 6,
+        "name": "version: DateTime<Local>",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "001f6c61473609c245ab9291f5140fee22dda77c218ab00dd6ae98213291afe0"
+}

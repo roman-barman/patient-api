@@ -9,6 +9,7 @@ pub trait Repository: Send + Sync {
     async fn exist(&self, id: &Uuid) -> Result<bool, anyhow::Error>;
     async fn update(&self, patient: &Patient) -> Result<bool, anyhow::Error>;
     async fn delete(&self, id: &Uuid) -> Result<bool, anyhow::Error>;
+    async fn get(&self) -> Result<Vec<Patient>, anyhow::Error>;
 }
 
 #[async_trait]

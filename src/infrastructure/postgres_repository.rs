@@ -127,4 +127,27 @@ impl Repository for PostgresRepository {
 
         Ok(result.rows_affected() > 0)
     }
+
+    #[tracing::instrument(name = "Get all patients from the DB", skip(self))]
+    async fn get(&self) -> Result<Vec<Patient>, anyhow::Error> {
+        let patients = sqlx::query_as!(
+            PatientDbModel,
+            r#"
+                SELECT
+                    id,
+                    family,
+                    given,
+                    gender as "gender: Gender",
+                    birth_date,
+                    active,
+                    version as "version: DateTime<Local>"
+                FROM patients
+            "#,
+        )
+        .fetch_all(&self.pool)
+        .await?;
+
+        let result: Result<Vec<Patient>, _> = patients.into_iter().map(Patient::try_from).collect();
+        result
+    }
 }
