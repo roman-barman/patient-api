@@ -1,5 +1,5 @@
 mod get_all;
-pub use get_all::get_all_patients;
+pub use get_all::{__path_get_all_patients, get_all_patients};
 
 mod get;
 pub use get::{__path_get_patient, get_patient};
