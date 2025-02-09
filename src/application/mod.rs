@@ -8,3 +8,5 @@ mod update_patient;
 pub use update_patient::*;
 mod delete_patient;
 pub use delete_patient::*;
+mod get_all_patients;
+pub use get_all_patients::*;
