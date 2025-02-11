@@ -1,0 +1,16 @@
+[package]
+name = "api"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+opentelemetry = "0.27.1"
+opentelemetry_sdk = { version = "0.27.1", features = ["rt-tokio"] }
+tracing = "0.1"
+tracing-log = "0.2"
+tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter", "json"] }
+opentelemetry-otlp = { version = "0.27.0", features = ["tokio"] }
+tracing-opentelemetry = "0.28.0"
+lib_api = { path = "../lib_api" }
+anyhow = { workspace = true }
+tokio = { workspace = true }

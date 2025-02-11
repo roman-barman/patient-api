@@ -13,7 +13,7 @@ RUN apt-get update -y \
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /app/target/release/patient_api patient_api
-COPY configuration configuration
+COPY --from=builder /app/target/release/api api
+COPY api/configuration configuration
 ENV APP_ENVIRONMENT=production
-ENTRYPOINT ["./patient_api"]
+ENTRYPOINT ["./api"]

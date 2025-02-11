@@ -1,0 +1,12 @@
+mod patient_response;
+pub use patient_response::*;
+mod delete;
+pub use delete::{__path_delete_patient, delete_patient};
+mod get;
+pub use get::{__path_get_patient, get_patient};
+mod get_all;
+pub use get_all::{__path_get_all_patients, get_all_patients};
+mod post;
+pub use post::{__path_create_patient, create_patient};
+mod put;
+pub use put::{__path_update_patient, update_patient};
