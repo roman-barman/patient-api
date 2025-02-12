@@ -77,6 +77,14 @@ impl TestApplication {
             .expect("Could not send request to server")
     }
 
+    pub async fn health_check(&self) -> Response {
+        self.api_client
+            .get(format!("{}/health", &self.address))
+            .send()
+            .await
+            .expect("Could not send request to server")
+    }
+
     async fn configure_database(setting: &Settings) {
         let maintenance_settings = {
             let mut maintenance_settings = setting.clone();
