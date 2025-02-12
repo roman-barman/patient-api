@@ -1,6 +1,8 @@
 use crate::api::api_doc::ApiDoc;
 use crate::api::configuration::Settings;
-use crate::api::{create_patient, delete_patient, get_all_patients, get_patient, update_patient};
+use crate::api::{
+    create_patient, delete_patient, get_all_patients, get_patient, health_check, update_patient,
+};
 use crate::application::{
     CommandHandler, CreatePatientCommand, CreatePatientHandler, DeletePatientCommand,
     DeletePatientHandler, GetPatientByIdCommand, GetPatientByIdHandler, GetPatientsCommand,
@@ -82,6 +84,7 @@ async fn run(
             .service(create_patient)
             .service(update_patient)
             .service(delete_patient)
+            .service(health_check)
             .service(
                 SwaggerUi::new("/swagger-ui/{_:.*}")
                     .url("/api-docs/openapi.json", ApiDoc::openapi()),
