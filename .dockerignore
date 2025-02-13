@@ -3,4 +3,5 @@ target/
 tests/
 Dockerfile.Migrator
 Dockerfile.API
+Dockerfile.Feeder
 scripts/
