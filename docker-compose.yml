@@ -24,7 +24,7 @@ services:
       "POSTGRES_USER": "patient"
       "POSTGRES_PASSWORD": "password"
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "postgres", "||", "exit", "1" ]
+      test: [ "CMD-SHELL", "pg_isready" ]
       interval: 1s
       timeout: 5s
       retries: 5
@@ -36,7 +36,8 @@ services:
     environment:
       "DATABASE_URL": "postgres://patient:password@postgres:5432/patient"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
   api:
     image: api
     build:
@@ -47,11 +48,23 @@ services:
     environment:
       "APP_TRACING_ADDRESS": "http://jaeger:4317"
     depends_on:
-      - jaeger
-      - migrator
+      jaeger:
+        condition: service_started
+      migrator:
+        condition: service_completed_successfully
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
       interval: 30s
       timeout: 30s
       retries: 3
       start_period: 10s
+  feeder:
+    image: feeder
+    build:
+      context: .
+      dockerfile: Dockerfile.Feeder
+    environment:
+      "APP_API_ADDRESS": "http:/api:8080"
+    depends_on:
+      api:
+        condition: service_started
