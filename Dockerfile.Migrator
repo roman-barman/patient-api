@@ -1,0 +1,8 @@
+FROM rust:1.84-slim
+
+WORKDIR /app
+RUN apt update && apt install lld clang -y
+RUN cargo install sqlx-cli --version=0.8.3 --features "rustls,postgres" --no-default-features --locked
+COPY migrations migrations
+
+CMD ["sqlx", "migrate", "run"]
