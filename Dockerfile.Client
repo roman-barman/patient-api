@@ -1,0 +1,12 @@
+FROM rust as builder
+
+WORKDIR /app
+RUN rustup target add wasm32-unknown-unknown
+RUN cargo install trunk
+COPY client .
+RUN trunk build --release --dist ./dist
+
+FROM nginx:stable-alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

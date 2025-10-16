@@ -68,3 +68,10 @@ services:
     depends_on:
       api:
         condition: service_started
+  client:
+    image: client
+    build:
+      context: .
+      dockerfile: Dockerfile.Client
+    ports:
+      - "8081:80"
