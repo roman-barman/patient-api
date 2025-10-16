@@ -9,10 +9,7 @@ async fn main() -> anyhow::Result<()> {
     let variable = "APP_TRACING_ADDRESS";
     let env = env::var(variable);
 
-    let tracing_address = match env {
-        Ok(val) => Some(val),
-        Err(_e) => None,
-    };
+    let tracing_address = env.ok();
 
     initialize_tracing_subscribe("info".into(), "patient-api".into(), tracing_address);
     let settings = Settings::read_configuration()?;
